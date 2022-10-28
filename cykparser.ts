@@ -1,7 +1,7 @@
 import { Grammar } from "./grammar";
 import { Rule } from "./rule";
 import { TSymbol } from "./tsymbol";
-import { cartesianProduct, findCart, printTable, rulesHave } from "./utils";
+import { cartesianProduct, findCart, printTable, setContains } from "./utils";
 
 export class CYKParser {
   grammar: Grammar;
@@ -15,9 +15,10 @@ export class CYKParser {
     let R = this.grammar.rules;
     let n = input.length;
 
-    let T: Set<TSymbol>[][] = new Array(n + 1).fill(new Array(n + 1));
+    let T: Set<TSymbol>[][] = new Array(n + 1);
 
     for (let i1 = 0; i1 < T.length; i1++) {
+      T[i1] = new Array(n + 1);
       for (let i2 = 0; i2 < T[i1].length; i2++) {
         T[i1][i2] = new Set<TSymbol>();
       }
@@ -33,6 +34,8 @@ export class CYKParser {
 
       console.log("Terminal Rules");
       for (let rule of terminalRules) {
+        //printTable(T);
+        //console.table(T);
         //if a_j = a then
         //console.log(`l: "${input[j - 1]}" r: "${[...rule.right.values()][0]}"`);
         if (new TSymbol(input[j - 1]).equals([...rule.right.values()][0])) {
@@ -42,6 +45,7 @@ export class CYKParser {
           T[j - 1][j].add(rule.left);
           //console.log("added one rule");
           printTable(T);
+          //console.table(T);
         }
       }
       console.log("NonTerminal Rules");
@@ -73,7 +77,7 @@ export class CYKParser {
         for (let rule of nonTerminalRules) {
           //if (B,C) in P then
           console.log(`rule:${rule}`);
-          if (rulesHave(P, [rule.right[0], rule.right[1]])) {
+          if (setContains(P, [rule.right[0], rule.right[1]])) {
             console.log("Found nonterminal");
             //T_{i,j} = T_{i,j}
             T[i][j].add(rule.left);
@@ -83,7 +87,7 @@ export class CYKParser {
       }
     }
 
-    if (T[0][n].has(new TSymbol("S"))) {
+    if (Array.from(T[0][n]).findIndex((e) => e.equals(new TSymbol("S"))) >= 0) {
       console.log("{" + input + "} is included in Grammar");
     } else {
       console.log("{" + input + "} is not included in Grammar");
