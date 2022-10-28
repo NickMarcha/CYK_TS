@@ -14,7 +14,7 @@ let askparseInput = (myParser: CYKParser) => {
     async (answer: string) => {
       if (["e", "exit"].findIndex((e) => e === answer) >= 0) exitProgram();
 
-      myParser.testString(answer);
+      myParser.testString(answer, true);
       askparseInput(myParser);
     }
   );

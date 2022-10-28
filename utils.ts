@@ -1,15 +1,5 @@
 import { TSymbol } from "./tsymbol";
 
-export function cartesianProduct<T>(...allEntries: T[][]): T[][] {
-  return allEntries.reduce<T[][]>(
-    (results, entries) =>
-      results
-        .map((result) => entries.map((entry) => result.concat([entry])))
-        .reduce((subResults, result) => subResults.concat(result), []),
-    [[]]
-  );
-}
-
 export function printTable(T: Set<TSymbol>[][]) {
   console.log("    ");
   let jaxis = "";
@@ -35,8 +25,8 @@ export function printTable(T: Set<TSymbol>[][]) {
 export function findCart(
   set1: Set<TSymbol>,
   set2: Set<TSymbol>
-): Set<[TSymbol, TSymbol]> {
-  let result: Set<[TSymbol, TSymbol]> = new Set<[TSymbol, TSymbol]>();
+): Set<TSymbol[]> {
+  let result: Set<TSymbol[]> = new Set<TSymbol[]>();
 
   let arr1 = Array.from(set1);
   let arr2 = Array.from(set2);
@@ -46,10 +36,7 @@ export function findCart(
   return result;
 }
 
-export function setContains(
-  io: Set<[TSymbol, TSymbol]>,
-  o: TSymbol[]
-): boolean {
+export function setContains(io: Set<TSymbol[]>, o: TSymbol[]): boolean {
   let pattern = Array.from(o);
   for (let i = 0; i < io.size; i++) {
     let entry = Array.from(io)[i];

@@ -1,7 +1,7 @@
 import { Grammar } from "./grammar";
 import { Rule } from "./rule";
 import { TSymbol } from "./tsymbol";
-import { cartesianProduct, findCart, printTable, setContains } from "./utils";
+import { findCart, printTable, setContains } from "./utils";
 
 export class CYKParser {
   grammar: Grammar;
@@ -9,10 +9,10 @@ export class CYKParser {
     this.grammar = grammar;
   }
 
-  public testString(inputString: string) {
+  public testString(inputString: string, step = false) {
     if (!this.grammar) return;
     let input = inputString.split(this.grammar.isSentence ? " " : "");
-    console.log(input);
+    console.log(`testing: ${input}`);
     let R = this.grammar.rules;
     let n = input.length;
 
@@ -33,61 +33,48 @@ export class CYKParser {
         (r) => r.right.length == 1
       );
 
-      console.log("Terminal Rules");
       for (let rule of terminalRules) {
-        //printTable(T);
-        //console.table(T);
         //if a_j = a then
-        //console.log(`l: "${input[j - 1]}" r: "${[...rule.right.values()][0]}"`);
         if (new TSymbol(input[j - 1]).equals([...rule.right.values()][0])) {
           //T_{j-1,j} = T_{j-1,j} union {A}
-          console.log(j);
-          console.log(rule);
           T[j - 1][j].add(rule.left);
-          //console.log("added one rule");
-          printTable(T);
-          //console.table(T);
+          if (step) printTable(T);
         }
       }
-      console.log("NonTerminal Rules");
       //for i = j-2 to 0 do
       for (let i = j - 2; i >= 0; i--) {
         //let P : N times N
         //P = emptyset
-        let P: Set<[TSymbol, TSymbol]> = new Set<[TSymbol, TSymbol]>();
+        let P: Set<TSymbol[]> = new Set<TSymbol[]>();
 
         //for k = i+1 to j-1 do
         for (let k = i + 1; k <= j - 1; k++) {
           //P = P union (T_{i,k} times T_{k,j})
-          //console.log(T);
-          //console.log(`i: ${i}, k: ${k}`);
           let one = T[i][k];
           let two = T[k][j];
 
           let cartReturn = findCart(one, two);
 
           //let product: [TSymbol, TSymbol] = cartesianProduct<TSymbol>(Array.from(one), Array.from(two));
-          P = new Set<[TSymbol, TSymbol]>([...P, ...cartReturn]);
+          P = new Set<TSymbol[]>([...P, ...cartReturn]);
         }
         //for all A -> B C in R do
-        console.log(`P:${new Array(...P).join(" ")}`);
         let nonTerminalRules = [...R.values()].filter(
           (r) => r.right.length !== 1
         );
-        console.log(`NTR:${new Array(...nonTerminalRules).join(" ")}`);
         for (let rule of nonTerminalRules) {
           //if (B,C) in P then
-          console.log(`rule:${rule}`);
           if (setContains(P, [rule.right[0], rule.right[1]])) {
-            console.log("Found nonterminal");
             //T_{i,j} = T_{i,j}
             T[i][j].add(rule.left);
-            printTable(T);
+            if (step) printTable(T);
           }
         }
       }
     }
 
+    console.log("Final Table:");
+    printTable(T);
     if (Array.from(T[0][n]).findIndex((e) => e.equals(new TSymbol("S"))) >= 0) {
       console.log("{" + input + "} is included in Grammar");
     } else {
