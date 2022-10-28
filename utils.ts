@@ -21,7 +21,7 @@ export function printTable(T: Set<TSymbol>[][]) {
   for (let i = 0; i < T.length - 1; i++) {
     let line = "[i" + i + "] ";
     for (let j = 1; j < T[i].length; j++) {
-      let items: string = new Array(...T[i][j]).join(",");
+      let items: string = Array.from(T[i][j]).join(",");
       for (let ip = items.length; ip < 15; ip++) {
         items += " ";
       }
@@ -46,13 +46,17 @@ export function findCart(
   return result;
 }
 
-export function rulesHave(
+export function setContains(
   io: Set<[TSymbol, TSymbol]>,
-  o: [TSymbol, TSymbol]
+  o: TSymbol[]
 ): boolean {
-  let compareTo = Array.from(o);
-  io.forEach((entry) => {
-    if (Array.from(entry).every((e, i) => e.equals(compareTo[i]))) return true;
-  });
+  let pattern = Array.from(o);
+  for (let i = 0; i < io.size; i++) {
+    let entry = Array.from(io)[i];
+
+    let entryArray = Array.from(entry);
+
+    if (Array.from(entry).every((e, i) => e.equals(pattern[i]))) return true;
+  }
   return false;
 }

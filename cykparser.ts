@@ -9,7 +9,8 @@ export class CYKParser {
     this.grammar = grammar;
   }
 
-  public parse(inputString: string) {
+  public testString(inputString: string) {
+    if (!this.grammar) return;
     let input = inputString.split(this.grammar.isSentence ? " " : "");
     console.log(input);
     let R = this.grammar.rules;

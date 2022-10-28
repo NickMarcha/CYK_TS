@@ -7,19 +7,37 @@ let rl = readline.createInterface({
   output: process.stdout,
 });
 const providedfilepath = process.argv[2];
-if (providedfilepath) {
-  let myGrammar = new Grammar(providedfilepath);
+
+let askparseInput = (myParser: CYKParser) => {
+  rl.question(
+    "Loaded grammar, type a string to test it:",
+    async (answer: string) => {
+      if (["e", "exit"].findIndex((e) => e === answer) >= 0) exitProgram();
+
+      myParser.testString(answer);
+      askparseInput(myParser);
+    }
+  );
+};
+
+let setParser = (filepath: string) => {
+  let myGrammar = new Grammar(filepath);
   myGrammar.createfromfilepath().then((_) => {
-    let parser = new CYKParser(myGrammar);
-    rl.question("Loaded grammar, type a string to test it:", async (answer) => {
-      parser.parse(answer);
-    });
+    let myParser = new CYKParser(myGrammar);
+    askparseInput(myParser);
   });
+};
+
+if (providedfilepath) {
+  setParser(providedfilepath);
 } else {
   rl.question("specify grammar file:", async (answer) => {
-    let myGrammar = new Grammar(answer);
-    await myGrammar.createfromfilepath();
-    console.log(myGrammar.toString());
-    rl.close();
+    setParser(providedfilepath);
   });
 }
+
+let exitProgram = () => {
+  console.log("(e)xit program");
+  rl.close();
+  process.exit();
+};
