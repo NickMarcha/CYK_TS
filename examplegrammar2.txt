@@ -1,0 +1,14 @@
+Fish language - she eats a fish with a fork
+sentence
+VP - eats
+NP - she
+V - eats
+P - with
+N - fish
+N - fork
+Det - a
+S - NP VP
+VP - VP PP
+VP - V NP
+PP - P NP
+NP - Det N

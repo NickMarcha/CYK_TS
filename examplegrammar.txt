@@ -1,0 +1,10 @@
+baaba language
+word
+A - a
+B - b
+C - a
+S - A B
+S - B C
+A - B A
+B - C C
+B - A B
